@@ -4,6 +4,8 @@
 ; square-root procedure that uses this kind of end test. Does this
 ; work better for small and large numbers?
 
+
+
 (define (sqrt-iter new-guess old-guess x)
    (if (good-enough? new-guess old-guess)
        new-guess
