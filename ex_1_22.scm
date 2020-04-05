@@ -38,11 +38,18 @@
 ; for this questions, n should be 3).
 
 (define (search-for-primes l n)
+   (if (even? l)
+       (sfp (+ l 1) n)
+       (sfp l n)))
+
+(define (sfp l n)
    (cond ((= n 0) '())
          ((prime? l) (sub-sfp l n))
-         (else (search-for-primes (+ l 1) n))))
+         (else (search-for-primes (+ l 2) n))))
 
 (define (sub-sfp l n)
    (timed-prime-test l)
-   (search-for-primes (+ l 1) (- n 1)))
+   (search-for-primes (+ l 2) (- n 1)))
+
+
 
