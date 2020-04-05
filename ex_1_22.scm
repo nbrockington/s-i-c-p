@@ -33,7 +33,9 @@
   (display elapsed-time))
 
 
-; Search-for-primes procedure:
+; Search-for-primes procedure: where operands l and n represent the                              
+; lower bound and number of primes to be found, respectively (i.e.,                            
+; for this questions, n should be 3).
 
 (define (search-for-primes l n)
    (cond ((= n 0) '())
