@@ -52,4 +52,6 @@
    (search-for-primes (+ l 2) (- n 1)))
 
 
+(define (even? n)
+  (= (remainder n 2) 0))
 
