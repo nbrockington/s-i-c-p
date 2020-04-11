@@ -34,7 +34,9 @@
   (= (remainder b a) 0))
 
 (define (prime? n)
-  (= n (smallest-divisor n)))
+  (if (= n 1)
+      #f
+      (= n (smallest-divisor n))))
 
 
 ; timed-prime-test procedure from Exercise 1.22:
