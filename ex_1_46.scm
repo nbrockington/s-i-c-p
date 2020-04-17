@@ -71,7 +71,7 @@
 
 (fixed-point (lambda (y) (+ (sin y) (cos y))) 1.0)
 
-;Value: 1.2587315962971173
+;Value: 1.2587315962971173 (CORRECT)
 
 
 
