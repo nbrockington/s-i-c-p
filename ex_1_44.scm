@@ -44,4 +44,3 @@
 
 (define (n-fold-smooth f n)
    ((repeated smooth n) f))
-
