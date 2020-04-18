@@ -30,8 +30,3 @@
           rep-f
           (repeated-iter f (compose f rep-f) (+ 1 i))))
    (repeated-iter f f 1))
-
-
-
-
-
