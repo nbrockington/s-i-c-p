@@ -102,4 +102,3 @@
           count
           (iter (/ a 2) (+ count 1))))
    (iter a 0))
-
