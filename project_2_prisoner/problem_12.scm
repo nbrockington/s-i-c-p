@@ -1,4 +1,4 @@
-; Problem 12: Procedure make-history-summary:
+; Problem 12: Procedure make-history-summary, i.e., the constructor for the history-summary data structure:
 
 (define (make-history-summary hist-0 hist-1 hist-2)
   (define (make-summary-helper hist-0 prev-1 prev-2
@@ -28,3 +28,15 @@
                (make-summary-helper (cdr hist-0) (cdr prev-1) (cdr prev-2)
                  cc-c cc-d cd-c (+ 1 cd-d) dd-c dd-d)))))
   (make-summary-helper hist-0 (cdr hist-1) (cdr hist-2) 0 0 0 0 0 0))
+
+
+; Some selectors for the history-summary data structure: 
+
+(define (select-cc summary)
+  (car summary))
+
+(define (select-cd summary)
+  (cadr summary))
+
+(define (select-dd summary)
+  (caddr summary))
