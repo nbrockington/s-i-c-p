@@ -1,3 +1,5 @@
+;;  The Three-Player Iterated Prisoners' Dilemma
+;;
 ;;                                                                                    
 ;;  The play-loop procedure takes as its  arguments two prisoner's                    
 ;;  dilemma strategies, and plays an iterated game of approximately                   
