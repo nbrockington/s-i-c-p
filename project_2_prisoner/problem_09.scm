@@ -85,7 +85,7 @@
   (list-ref (get-point-list game) num))
 
 (define (get-point-list game)
-  (cadr (extract-entry game *game-association-list3*)))
+  (cadr (extract-entry game *game-association-list-3*)))
 
 ;; note that you will need to write extract-entry                                     
 
