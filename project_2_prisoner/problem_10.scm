@@ -1,3 +1,4 @@
+; Problem 10: A sampler of 3-player strategies:
 
 (define (PATSY-3 my-hist other-hist-1 other-hist-2)
   "c")
