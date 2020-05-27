@@ -83,11 +83,11 @@
   (cdr branch))
 
 
-; (define m1 (make-mobile (make-branch 2 6) (make-branch 3 4)))
+(define m1 (make-mobile (make-branch 2 6) (make-branch 3 4)))
 
-; (define m2 (make-mobile (make-branch 1 5) (make-branch 5 1)))
+(define m2 (make-mobile (make-branch 1 5) (make-branch 5 1)))
 
-; (define m3 (make-mobile (make-branch 6 m1) (make-branch 10 m2)))
+(define m3 (make-mobile (make-branch 6 m1) (make-branch 10 m2)))
 
 ; 1 ]=> (total-weight m3)
 ; Value: 16
