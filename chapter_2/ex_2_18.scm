@@ -9,3 +9,9 @@
   (reverse-helper items '()))
   
   
+; Alternative process:
+
+(define (reverse x)
+  (cond ((null? x) x)
+        (else (append (reverse (cdr x))
+                      (list (car x))))))
