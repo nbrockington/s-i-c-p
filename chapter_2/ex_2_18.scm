@@ -9,7 +9,7 @@
   (reverse-helper items '()))
   
   
-; Alternative process:
+; Alternative procedure:
 
 (define (reverse x)
   (cond ((null? x) x)
