@@ -1,0 +1,270 @@
+SICP_solutions_11.txt
+
+Solutions to the SICP Exercises 1.1 - 1.8 from section 1.1.   
+
+******
+200325
+200326
+
+(Exercise 1.1)
+
+10
+12
+8
+3
+6
+a
+b
+19
+#f
+4
+16
+6
+16
+
+
+(Exercise 1.2) 
+
+1 ]=> (/ (+ 5 (/ 1 2) (- 2 (- 3 (+ 6 (/ 1 5))))) (* 3 (- 6 2) (- 2 7)))
+
+
+(Exercise 1.3) 
+
+(define (maxsq x y z)
+   (cond ((and (< z x) (< z y)) (+ (* x x) (* y y)) )
+         ((and (< y x) (< y z)) (+ (* x x) (* z z)) )
+         (else (+ (* y y) (* z z)))))
+
+
+(Exercise 1.4) 
+
+(define (a-plus-abs-b a b)
+  ((if (> b 0) + -) a b))
+
+The compound procedure (a-plus-abs-b) takes in two arguments, (a) and
+(b), and passes them to a compound expression. The operator of the
+compound expression is itself an expression that tests whether or not
+b is greater than zero. If b is greater than zero, then the compound
+expression returns operator (+). If b is not greater than zero, then
+the expression returns operator (-). The arguments (a) and (b) are
+then the operands for the operator that has been returned. Hence, if b
+is greater than zero, then the procedure evaluates (+ a b) which is
+the sum of (a) and (b); otherwise, the procedure evaluates (- a b)
+which is the sum of (a) and (-b). Hence overall the procedure returns
+the sum of (a) and the modulus of (b).
+
+
+(Exercise 1.5)
+
+(define (p) (p))
+
+(define (test x y)
+  (if (= x 0)
+      0
+      y))
+
+(test 0 (p))
+
+An interpreter that uses applicative-order evaluation will first
+evaluate the operator and operands, and then apply the resulting
+procedure to the resulting arguments. Hence, this interpreter will
+first evaluate "test", (0) and ((p)). When the interpreter tries to
+evaluate ((p)), this will start an infinite loop because ((p)) is a
+compound procedure that returns itself so it has to be evaluated again
+and so on. Hence this interpreter will enter an infinite loop and
+never return a value.
+
+An interpreter than uses normal-order evaluation will first substitute
+operand expressions for parameters and would only perform the
+evaluation once it obtained an expression involving only primitive
+operators (i.e., no further substitutions to make). This operator
+would therefore first substitute the operands (0) and ((p)) into
+(test), obtaining the following sequence of reductions:
+
+((if (= x 0) 0 y) 0 (p))
+
+(if (= 0 0) 0 (p))
+
+Then the predicate expression of the special form (if) is evaluated
+first, returning (#t), so the consequent expression (0) is evaluated,
+returning (0). Hence the expression ((p)) is never evaluated, avoiding
+the infinite loop.
+
+
+(Exercise 1.6) 
+
+(define (new-if predicate then-clause else-clause)
+  (cond (predicate then-clause)
+        (else else-clause)))
+
+
+(define (sqrt-iter guess x)
+  (new-if (good-enough? guess x)
+          guess
+          (sqrt-iter (improve guess x)
+                     x)))
+
+
+Since the interpreter uses applicative-order evaluation, it will first
+evaluate the operator (new-if) and its operands, (good-enough? guess
+x), (guess), and (sqrt-iter (improve guess x) x). Next, it will apply
+the resulting procedure to the resulting arguments. This means that
+(sqrt-iter (improve guess x) x) will be evaluated each time
+regardless of whether the guess is good enough, starting an infinite
+execution loop that will never return a value.
+
+(Exercise 1.7) 
+
+The test fails for very small numbers because the comparison in the
+procedure (good-enough) will evaluate as true if the numbers being
+compared are small enough. For example, if the number being square is
+less than 0.001, e.g. 0.0009, then the square root of any number
+within 0.001 of 0.0009 (i.e. within the bounds of 0.0019 and 0.0001)
+could be accepted as the square root of 0.0009. Indeed, the program
+returns 0.0403 (4 dp) as the square root of 0.0009, when the answer
+should be 0.03.
+
+The test fails for very large numbers because there is a limit to the
+precision of the machine's representation of them. Therefore, the
+absolute difference between two numbers that have a very large order
+of magnitude, such as (x) and the square of (square), might always be
+larger than 0.001, leading to an infinite loop. For exampe,
+
+(sqrt 10000000000000.0)
+
+will enter an infinite loop because (guess) will eventually become
+3162277.6601683795 [Intel Core i5, OS X Mojave]. In this case,
+(good-enough? guess x) keeps returning (#f) because the difference
+between the square of (guess) is 10000000000000.002, which is not
+within 0.001 of (x), but (improve-guess) keeps yielding the same
+(guess).
+
+An improved procedure (sqrti) watches how (guess) changes from
+iteration to iteration and stops when the change is a very small
+fraction of the guess:
+
+(define (sqrt-iter new-guess old-guess x)
+   (if (good-enough? new-guess old-guess)
+       new-guess
+       (sqrt-iter (improve new-guess x) new-guess x)))
+
+
+(define (improve guess x)
+   (average guess (/ x guess)))
+
+
+(define (average x y)
+   (/ (+ x y) 2))
+
+
+(define (good-enough? new-guess old-guess)
+   (< (/ (abs (- old-guess new-guess)) old-guess) 0.001))
+
+
+(define (sqrti x)
+   (sqrt-iter 1 1.1 x))
+
+
+This works better for small and large numbers. To use the same examples as above: 
+
+1 ]=> (sqrti 0.0009)
+
+;Value: 3.0000012746348552e-2
+
+
+1 ]=> (sqrti 10000000000000.0)
+
+;Value: 3162277.6640104805
+
+The procedure can be made even more accurate for large numbers by
+using a smaller increment threshold in (good-enough?); regardless, the
+important point is that the procedure ends and does not loop
+infinitely.
+
+An alternative (good-enough?) procedure uses the system's precision
+limit itself to set the bar for what is a good enough guess, by
+testing whether (old-guess) and (new-guess) are indistinguishable with
+respect to system precision:
+
+(define (good-enough? new-guess old-guess)
+   (= new-guess old-guess))
+
+This version of (good-enough?) is optimal for small and large numbers
+*but NB. can only be called on numbers forced to be floating point,
+otherwise it enters an infinite loop, see use of ".0" on operands
+below*:
+
+1 ]=> (sqrti 0.0009)
+
+;Value: .03
+
+1 ]=> (sqrti 10000000000000.0)
+
+;Value: 3162277.6601683795
+
+1 ]=> (square (sqrti 10000000000000.0))
+
+;Value: 10000000000000.002
+
+
+
+(Exercise 1.8) 
+
+Function for finding the cube root of operand x: 
+
+(define (cube-iter new-guess old-guess x)
+   (if (good-enough? new-guess old-guess)
+        new-guess
+       (cube-iter (improve new-guess x) new-guess x)))
+
+
+(define (improve guess x)
+   (/ (+ (/ x (* guess guess)) (* 2 guess)) 3))
+
+
+(define (good-enough? new-guess old-guess)
+   (= new-guess	      old-guess))
+
+
+(define (good-enough-alt? new-guess old-guess)
+   (< (/ (abs (- new-guess old-guess)) old-guess) 0.001))
+
+
+(define (cbrt x)
+   (cube-iter 1 1.1 x))
+
+
+
+NB. Using (good-enough?) as the terminal step-defining function gives
+the most accurate answers, but will enter an infinite loop with
+operands that are not explicity forced to be float types: 
+
+1 ]=> (cbrt 1000000000000000000000000.0)
+
+;Value: 100000000.
+
+Using (good-enough-alt?) will halt with any non-zero operand, albeit
+giving less-accurate answers and giving quotients in response to
+non-float input types:
+
+1 ]=> (cbrt 1000000000000000000.0)
+
+;Value: 1000000.0007855276
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
