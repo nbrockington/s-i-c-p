@@ -1,0 +1,552 @@
+SICP_solutions_13_Ex129_139.txt
+
+******
+200408
+200411
+200416
+
+(Exercise 1.29)
+
+; Simpson's Rule is a more accurate method of numerical integration
+; than the method illustrated above. Using Simpson's Rule, the
+; integral of a function f between a and b is approximated as
+;
+; (h/3)*[y_0 + 4*y_1 + 2*y_2 + 4*y_3+...+2*y_(n-2) + 4*y_(n-1) + y_n]
+;
+; where h = (b - a)/n, for some even integer n, and y_k = f(a +
+; kh). (Increasing n increases the accuracy of the approximation.)
+; Define a procedure that takes as arguments f, a, b, and n and
+; returns the value of the integral, computed using Simpson's
+; Rule. Use your procedure to integrate cube between 0 and 1 (with n =
+; 100 and n = 1000), and compare the results to those of the integral
+; procedure shown above.
+
+
+(define (simpson-integral f a b n)
+   (define h (/ (- b a) n))
+   (define l-b a)
+   (define (inc a) (+ a h))
+   (define (scaled-y x)
+      (define (calc-scale k)
+         (cond ((or (= k 0) (= k n)) (f x))
+               ((not (even? k)) (* 4.0 (f x)))
+               (else (* 2.0 (f x)))))
+      (calc-scale (/ (- x l-b) h)))
+   (if (even? n)
+       (* (sum scaled-y a inc b) (/ h 3.0))
+       0))
+
+
+; Procedures (sum) and (even?) provided in book:
+
+(define (sum term a next b)
+   (if (> a b)
+       0
+       (+ (term a)
+          (sum term (next a) next b))))
+
+
+(define (even? n)
+   (= (remainder n 2) 0))
+
+
+Results: 
+
+1 ]=> (simpson-integral cube 0 1 100) 
+
+;Value: .24999999999999992
+
+1 ]=> (simpson-integral cube 0 1 1000)
+
+;Value: .2500000000000002
+
+These are more accurate than the approximations provided by the prior
+numerical method in the book:
+
+(define (integral f a b dx)
+  (define (add-dx x) (+ x dx))
+  (* (sum f (+ a (/ dx 2.0)) add-dx b)
+     dx))
+(integral cube 0 1 0.01)
+.24998750000000042
+(integral cube 0 1 0.001)
+.249999875000001
+
+
+(Exercise 1.30)
+
+; The sum procedure above generates a linear recursion. The procedure
+; can be rewritten so that the sum is performed iteratively. Show how
+; to do this by filling in the missing expressions in the following
+; definition:
+
+; New, iterative (sum) procedure
+
+(define (sum term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (+ (term a) result))))
+  (iter a 0))
+
+
+(define (inc a)
+   (+ a 1))
+
+
+
+1 ]=> (sum square 1 inc 5)
+
+;Value: 55
+
+1 ]=> (sum square 1 inc 10)
+
+;Value: 385
+
+
+(Exercise 1.31)
+
+; a.  The sum procedure is only the simplest of a vast number of
+; similar abstractions that can be captured as higher-order
+; procedures. Write an analogous procedure called product that returns
+; the product of the values of a function at points over a given
+; range. Show how to define factorial in terms of product. Also use
+; product to compute approximations to pi using the formula pi/4 = (2
+; * 4 * 4 * 6 * 6 * 8 ...)/(3 * 3 * 5 * 5 * 7 * 7 * ...)
+
+
+; Linear recursive (product) procedure:
+
+(define (product term a next b)
+   (if (> a b)
+       1
+       (* (term a)
+          (product term (next a) next b))))
+
+
+(define (identity x) x)
+(define (inc x) (+ x 1))
+
+
+(define (factorial n)
+   (product identity 1 inc n))
+
+
+; Approximation to pi by (a la John Wallis):
+
+(define (inc-by-2 x) (+ x 2))
+
+(define (approx-pi n)
+   (* 4.0
+      (/ (* 2
+            (product square 4 inc-by-2 (* 2 n))
+            (* 2 (+ n 1)))
+         (product square 3 inc-by-2 (+ 1 (* n 2))))))
+
+
+
+; b. If your product procedure generates a recursive process, write
+; one that generates an iterative process. If it generates an
+; iterative process, write one that generates a recursive process.
+
+
+(define (producti term a next b)
+   (define (product-iter a result)
+      (if (> a b)
+          result
+          (product-iter (next a) (* (term a) result))))
+   (product-iter a 1))
+
+
+
+(Exercise 1.32)
+
+; a. Show that sum and product (exercise 1.31) are both special cases
+; of a still more general notion called accumulate that combines a
+; collection of terms, using some general accumulation function:
+; (accumulate combiner null-value term a next b) Accumulate takes as
+; arguments the same term and range specifications as sum and product,
+; together with a combiner procedure (of two arguments) that specifies
+; how the current term is to be combined with the accumulation of the
+; preceding terms and a null-value that specifies what base value to
+; use when the terms run out. Write accumulate and show how sum and
+; product can both be defined as simple calls to accumulate.
+
+; Definition of (accumulate) that generates a linear recursive
+  process:
+
+(define (accumulate combiner null-value term a next b)
+   (if (> a b)
+       null-value
+       (combiner (term a)
+                 (accumulate combiner
+                             null-value
+                             term
+                             (next a)
+                             next
+                             b))))
+
+
+; Definitions of (sum) and (product) as simple calls to (accumulate):
+
+(define (sum term a next b)
+   (accumulate + 0 term a next b))
+
+(define (product term a next b)
+   (accumulate * 1 term a next b))
+
+; b. If your accumulate procedure generates a recursive process, write
+; one that generates an iterative process. If it generates an
+; iterative process, write one that generates a recursive process.
+
+
+(define (accumulate-i combiner null-value term a next b)
+   (define (acc-iter a result)
+      (if (> a b)
+          result
+          (acc-iter (next a) (combiner (term a) result))))
+   (acc-iter a null-value))
+
+
+
+(Exercise 1.33)
+
+; You can obtain an even more general version of accumulate (exercise
+; 1.32) by introducing the notion of a filter on the terms to be
+; combined. That is, combine only those terms derived from values in
+; the range that satisfy a specified condition. The resulting
+; filtered-accumulate abstraction takes the same arguments as
+; accumulate, together with an additional predicate of one argument
+; that specifies the filter. Write filtered-accumulate as a
+; procedure. Show how to express the following using
+; filtered-accumulate:
+
+
+(define (filtered-accumulate combiner null-value predicate? term a next b)
+   (define (filt-acc-iter a result)
+      (cond ((> a b) result)
+            ((predicate? a) (filt-acc-iter (next a)
+                                           (combiner (term a) result)))
+            (else (filt-acc-iter (next a)
+                                 result))))
+   (filt-acc-iter a null-value))
+
+
+(define (inc x) (+ x 1))
+
+
+; a) the sum of the squares of the prime numbers in the interval a to
+; b (assuming that you have a prime? predicate already written)
+
+(define (sum-of-squares-of-primes a b)
+   (filtered-accumulate + 0 prime? square a inc b))
+
+
+; b) the product of all the positive integers less than n that are
+; relatively prime to n (i.e., all positive integers i < n such that
+; GCD(i,n) = 1)
+
+; ANS: First need to create unary predicate (coprime-to-n?) for a
+; given number n:
+
+(define (product-coprime-to-n n)
+   (define (coprime-to-n? x) (coprime? x n))
+   (filtered-accumulate * 1 coprime-to-n? identity 1 inc n))
+
+; where:
+
+(define (coprime? x n)
+   (define (gcd a b)
+     (if (= b 0)
+         a
+         (gcd b (remainder a b))))
+   (= (gcd x n) 1))
+
+
+(define (identity x) x)
+
+
+(Exercise 1.34)
+
+Suppose we define the procedure
+
+(define (f g)
+  (g 2))
+
+Then we have (f square) -> 4
+
+(f (lambda (z) (* z (+ z 1)))) -> 6
+
+What happens if we (perversely) ask the interpreter to evaluate the
+combination (f f)? Explain.
+
+ANS. (f f) is evaluated to (f 2), which is evaluated to (2 2), which
+cannot be evaluated because 2 is not a procedure that takes in an
+argument. The exact error is:
+
+1 ]=> (f f)
+
+;The object 2 is not applicable.
+
+
+(Exercise 1.35)
+
+; Show that the golden ratio (phi) (section 1.2.2) is a fixed point of
+; the transformation x -> 1 + 1/x, and use this fact to compute (phi)
+; by means of the fixed-point procedure.
+
+(Phi) is the solution to x^2 = x + 1. After division by x, this
+equation is transfored to x = 1 + 1/x, and (phi) is still a solution,
+as required. Hence, this equation can be used for fixed-point
+iteration to estimate the value of (phi).
+
+To find (phi):
+
+1 ]=> (fixed-point (lambda (x) (+ 1 (/ 1 x))) 1.1)
+
+;Value: 1.6180364726455159
+
+
+
+(Exercise 1.36)
+
+; Modify (fixed-point) so that it prints the sequence of
+; approximations it generates, using the (newline) and (display)
+; primitives shown in exercise 1.22. Then find a solution to x^x =
+; 1000 by finding a fixed point of x -> log(1000)/log(x). (Use
+; Scheme's primitive log procedure, which computes natural
+; logarithms.) Compare the number of steps this takes with and without
+; average damping. (Note that you cannot start (fixed-point) with a
+; guess of 1, as this would cause division by log(1) = 0.)
+
+
+; Adapted (fixed-point) procedure to print the sequence of
+; approximations it generates:
+
+(define tolerance 0.00001)
+
+(define (fixed-point f first-guess)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (try guess)
+    (newline)
+    (display guess)
+    (let ((next (f guess)))
+      (if (close-enough? guess next)
+          next
+          (try next))))
+  (try first-guess))
+
+(define (close-enough? x y)
+  (< (abs (- x y)) 0.001))
+
+(define (average x y)
+   (/ (+ x y) 2))
+
+
+; Finding solution to x^x = 1000, without average damping:
+
+1 ]=> (fixed-point (lambda (x) (/ (log 1000) (log x))) 1.1)
+
+1.1
+72.47657378429035
+1.6127318474109593
+14.45350138636525
+2.5862669415385087
+7.269672273367045
+3.4822383620848467
+5.536500810236703
+4.036406406288111
+4.95053682041456
+4.318707390180805
+4.721778787145103
+4.450341068884912
+4.626821434106115
+4.509360945293209
+4.586349500915509
+4.535372639594589
+4.568901484845316
+4.546751100777536
+4.561341971741742
+4.551712230641226
+4.558059671677587
+4.55387226495538
+4.556633177654167
+4.554812144696459
+4.556012967736543
+4.555220997683307
+4.555743265552239
+4.555398830243649
+4.555625974816275
+4.555476175432173
+4.555574964557791
+4.555509814636753
+4.555552779647764
+4.555524444961165
+4.555543131130589
+4.555530807938518
+;Value: 4.555538934848503
+
+
+; Finding solution to x^x = 1000, with average damping:
+
+1 ]=> (fixed-point (lambda (x) (average x (/ (log 1000) (log x)))) 1.1)
+
+1.1
+36.78828689214517
+19.352175531882512
+10.84183367957568
+6.870048352141772
+5.227224961967156
+4.701960195159289
+4.582196773201124
+4.560134229703681
+4.5563204194309606
+4.555669361784037
+4.555558462975639
+4.55553957996306
+;Value: 4.555536364911781
+
+ANS: Finding the solution with average damping is much quicker,
+because the oscillations around the true value are smaller (damped).
+
+
+(Exercise 1.37)
+
+; a) a. An infinite continued fraction is an expression of the form ;
+;
+; f = (N_1 / (D_1 + (N_2 / (D_2 + (N_3 / (D_3 + ...
+; 
+; As an example, one can show that the infinite continued fraction ;
+expansion with the N_i and the D_i all equal to 1 produces 1/(phi), ;
+where (phi)is the golden ratio (described in section 1.2.2). One way ;
+to approximate an infinite continued fraction is to truncate the ;
+expansion after a given number of terms. Such a truncation -- a ;
+so-called k-term finite continued fraction -- has the form
+;
+; f = (N_1 / (D_1 + (N_2 / ... + (N_k / D_k)...) 
+;
+; Suppose that (n) and (d) are procedures of one argument (the term
+; index i) that return the N_i and D_i of the terms of the continued
+; fraction. Define a procedure (cont-frac) such that evaluating
+; (cont-frac n d k) computes the value of the k-term finite continued
+; fraction. Check your procedure by approximating 1/ using
+;
+; (cont-frac (lambda (i) 1.0)
+;            (lambda (i) 1.0)
+;            k)
+;
+;for successive values of k. How large must you make k in order to get
+;an approximation that is accurate to 4 decimal places?
+
+
+; Recursive definition of (cont-frac):
+
+(define (cont-frac n d k)
+   (define (cont-frac-rec i)
+      (cond ((> i k) 0)
+            (else (/ (n i) (+ (d i) (cont-frac-rec (+ i 1)))))))
+   (cont-frac-rec 1))
+
+
+; Procedure to calculate smallest value of k required to approximate
+; (phi) to 4 decimal places with (cont-frac) as above:
+
+(define (approx-phi k)
+   (newline)
+   (display k)
+   (let ((est-phi (/ 1 (cont-frac (lambda (i) 1.0) (lambda (i) 1.0) k))))
+      (if (< (abs (- est-phi 1.6180)) 0.00005)
+          est-phi
+          (approx-phi (+ k 1)))))
+
+; Answer: k = 11 (Value: 1.6179775280898876 rounds to 1.6180 4 d.p.)
+
+
+; b. If your cont-frac procedure generates a recursive process, write
+; one that generates an iterative process. If it generates an
+; iterative process, write one that generates a recursive process.
+
+; Iterative definition of (cont-frac) NB. The iterative version works
+; by starting from the innermost N_k/D_k fraction and then building
+; the rest of the continued fraction around it:
+
+(define (cont-frac-iter n d k)
+   (define (iter frac i)
+      (cond ((= i 0) frac)
+            (else (iter (/ (n i) (+ (d i) frac)) (- i 1)))))
+   (iter 0 k))
+
+
+
+(Exercise 1.38)
+
+; In 1737, the Swiss mathematician Leonhard Euler published a memoir
+; De Fractionibus Continuis, which included a continued fraction
+; expansion for e - 2, where e is the base of the natural
+; logarithms. In this fraction, the N_i are all 1, and the D_i are
+; successively 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, .... Write a program
+; that uses your (cont-frac) procedure from exercise 1.37 to
+; approximate e, based on Euler's expansion.
+
+; Using the interative version of (cont-frac) from Exercise 1.37:
+
+(define (cont-frac-iter n d k)
+   (define (iter frac i)
+      (cond ((= i 0) frac)
+            (else (iter (/ (n i) (+ (d i) frac)) (- i 1)))))
+   (iter 0 k))
+
+
+; Defining N_i:
+
+(define (n-seq i) 1)
+
+
+; Defining D_i:
+
+(define (d-seq i)
+   (if (= 2 (remainder i 3))
+       (* 2.0 (/ (+ i 1) 3))
+       1.0))
+
+
+; Estimating constant e based on Euler's expansion:
+
+(define (approx-e k)
+   (+ 2	(cont-frac-iter	n-seq d-seq k)))
+
+;Value: 2.7182818284590455
+
+
+(Exercise 1.39)
+
+; A continued fraction representation of the tangent function was
+; published in 1770 by the German mathematician J.H. Lambert:
+;
+; tan x = (x / (1 - (x^2 / (3 - (x^2 / (5 - ...  
+;
+; where x is in radians. Define a procedure (tan-cf x k) that computes
+; an approximation to the tangent function based on Lambert's
+; formula. k specifies the number of terms to compute, as in exercise
+; 1.37.
+
+; Using the iterative version of (cont-frac) from Exercise 1.37:
+
+(define (cont-frac-iter n d k)
+   (define (iter frac i)
+      (cond ((= i 0) frac)
+            (else (iter (/ (n i) (+ (d i) frac)) (- i 1)))))
+   (iter 0.0 k))
+
+
+; Defining (tan-cf):
+
+(define (tan-cf x k)
+   (define (n-seq i)
+      (if (= i 1)
+      	  x
+    	  (- 0 (* x x))))
+   (define (d-seq i)
+      (- (* 2 i) 1))
+   (cont-frac-iter n-seq d-seq k))
