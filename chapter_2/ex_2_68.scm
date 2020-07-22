@@ -15,6 +15,8 @@
 ; tree and seeing whether it is the same as the original sample
 ; message.
 
+; ANSWER:
+
 (define (encode-symbol symbol tree)
   (define (encode-symbol-aux symbol tree)
     (cond ((element-of-set? symbol (symbols (left-branch tree)))
