@@ -1,8 +1,6 @@
 SICP_solutions_21_Ex201_211.txt
 
-cat ~/Documents/math/comp_sci/languages/scheme_LISP/ex_2_01.scm >> 
-
-SICP_solutions_21_Ex201_216.txt
+My solutions to Section 2.1, Exercises 2.1 to 2.11.
 
 I skipped Exercise 2.12 - 2.16 because they were focussed on
 arithmetic ideas rather than functional programming.
