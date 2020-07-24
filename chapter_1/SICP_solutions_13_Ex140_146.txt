@@ -1,5 +1,7 @@
 SICP_solutions_13_Ex140_146.txt
 
+My solutions to Section 1.3, Exercise 1.40 to 1.46.
+
 ******
 200416
 200417
