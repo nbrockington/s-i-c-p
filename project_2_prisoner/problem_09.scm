@@ -15,6 +15,9 @@
 ;; code to use in 3 player game                                                       
 ;;                                                                                    
 
+
+; Adapted for the three-player game by me:
+
 (define (play-loop-3 strat0 strat1 strat2)
   (define (play-loop-iter strat0 strat1 strat2 count hist0 hist1 hist2 limit)
     (cond ((= count limit) (print-out-results-3 hist0 hist1 hist2 limit))
@@ -33,7 +36,8 @@
                   (+ 90 (random 21))))
                   
                   
-                  
+; Adapted for the three-player game by me:
+
 (define *game-association-list-3*
   (list (list (list "c" "c" "c") (list 4 4 4))
         (list (list "c" "c" "d") (list 2 2 5))
@@ -53,6 +57,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 
 
+; Adapted by me:
 
 (define (print-out-results-3 hist0 hist1 hist2 number-of-games)
   (let ((scores (get-scores-3 hist0 hist1 hist2)))
@@ -67,6 +72,8 @@
     (display (* 1.0 (/ (caddr scores) number-of-games)))
     (newline)))
 
+
+; Adapted by me:
 
 (define (get-scores-3 hist0 hist1 hist2)
   (define (get-scores-helper hist0 hist1 hist2 score0 score1 score2)
@@ -100,7 +107,7 @@
 
 (define the-empty-history '())
 
-(define extend-history cons)
+(define extend-history cons)  
 (define empty-history? null?)
 
 (define most-recent-play car)
