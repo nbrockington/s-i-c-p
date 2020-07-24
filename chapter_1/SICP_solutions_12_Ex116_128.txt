@@ -1,6 +1,6 @@
 SICP_solutions_12_Ex116_128.txt
 
-Solutions to Exercise 1.16 to 1.28 from SICP textbook Chapter 1.2. 
+My solutions to Exercise 1.16 to 1.28 from SICP textbook Chapter 1.2. 
 
 ******
 200405
