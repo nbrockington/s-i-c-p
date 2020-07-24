@@ -11,6 +11,7 @@
       "c"
       "d"))
 
+; Written by me:
 
 (define (TOUGH-EYE-FOR-EYE my-hist other-hist-1 other-hist-2)
   (cond ((empty-history? my-hist) "c")
