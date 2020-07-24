@@ -1,5 +1,7 @@
 SICP_solutions_22_Ex233_253.txt
 
+My solutions to Section 2.2, Exercises 2.33 to 2.53.
+
 ******
 200528
 200530
