@@ -1,0 +1,9 @@
+; Provided procedure DFS-simple
+
+(define (DFS-simple start goal? graph)
+  (search start
+          goal?
+          find-node-children
+          (lambda (new old) (append new old))
+          graph))
+
