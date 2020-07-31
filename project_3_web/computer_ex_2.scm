@@ -30,13 +30,13 @@
 
 ; Testing: visits each node at most once when cannot find the goal:                             
 
-;1 ]=> (DFS 'a (lambda (node) (eq? node 'x)) test-cycle)                                        
+(DFS 'a (lambda (node) (eq? node 'x)) test-cycle)                                        
 ;(now-at a)                                                                                     
-f;(now-at b)                                                                                    
+;(now-at b)                                                                                    
 ;(now-at c)                                                                                     
 ;Value: #f                                                                                      
 
-;1 ]=> (DFS 'http://sicp.csail.mit.edu/ (lambda (node) (eq? node 'x)) the-web)                  
+(DFS 'http://sicp.csail.mit.edu/ (lambda (node) (eq? node 'x)) the-web)                  
 ;(now-at http://sicp.csail.mit.edu/)                                                            
 ;(now-at http://sicp.csail.mit.edu/schemeimplementations)                                       
 ;(now-at http://sicp.csail.mit.edu/getting-help.html)                                           
@@ -57,13 +57,13 @@ f;(now-at b)
                       
 ; Testing: visits each note at most once, but in different order:                               
 
-;1 ]=> (BFS 'a (lambda (node) (eq? node 'x)) test-cycle)                                        
+(BFS 'a (lambda (node) (eq? node 'x)) test-cycle)                                        
 ;(now-at a)                                                                                     
 ;(now-at b)                                                                                     
 ;(now-at c)                                                                                     
 ;Value: #f                                                                                      
 
-;1 ]=> (BFS 'http://sicp.csail.mit.edu/ (lambda (node) (eq? node 'x)) the-web)                  
+(BFS 'http://sicp.csail.mit.edu/ (lambda (node) (eq? node 'x)) the-web)                  
 ;(now-at http://sicp.csail.mit.edu/)                                                            
 ;(now-at http://sicp.csail.mit.edu/schemeimplementations)                                       
 ;(now-at http://sicp.csail.mit.edu/psets)                                                       
