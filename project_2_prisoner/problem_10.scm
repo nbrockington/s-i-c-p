@@ -6,7 +6,7 @@
 (define (NASTY-3 my-hist other-hist-1 other-hist-2)
   "d")
 
-(define (SPASTIC-3 my-hist other-hist-1 other-hist-2)
+(define (RANDOM-3 my-hist other-hist-1 other-hist-2)
   (if (= (random 2) 0)
       "c"
       "d"))
